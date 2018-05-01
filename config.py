@@ -29,16 +29,6 @@ class ConfigDict(dict):
 cfg = ConfigDict()
 
 # ---------------------------------------------------------------------------- #
-# Train cofigurations
-# ---------------------------------------------------------------------------- #
-
-cfg.TRAIN = ConfigDict()
-
-cfg.TRAIN.TRAINING = False
-
-cfg.TRAIN.WEIGHTS = 'b' # weight filename
-
-# ---------------------------------------------------------------------------- #
 # Model cofigurations
 # ---------------------------------------------------------------------------- #
 
@@ -46,9 +36,23 @@ cfg.MODEL = ConfigDict()
 
 cfg.MODEL.OUTPUT_DIR = 'models/'
 
-cfg.MODEL.CONV_BODY = conv_bodies.VGG16 # function object
+cfg.MODEL.CONV_BODY = conv_bodies.FCN_8 # function object
 
-cfg.MODEL.NUM_CLASSES = 10
+cfg.MODEL.NUM_CLASSES = 150
+
+# ---------------------------------------------------------------------------- #
+# Train cofigurations
+# ---------------------------------------------------------------------------- #
+
+cfg.TRAIN = ConfigDict()
+
+cfg.TRAIN.TRAINING = True
+
+cfg.TRAIN.WEIGHTS = 'b' # weight filename
+
+cfg.TRAIN.BATCH_SIZE = 4
+cfg.TRAIN.LEARNING_RATE = 0.005
+
 
         
         
