@@ -86,7 +86,7 @@ def FCN_32(model):
     -output: A tf.Tensor object repressenting the output of the network
     """
     original_shape = model.tensor.get_shape().as_list()
-    final_shape = original_shape[:3] + [model.num_classes]
+    final_shape = original_shape[:3] + [model.num_classes+1]
     print('Starting network', model.tensor.shape)
     with tf.variable_scope('conv1', reuse=tf.AUTO_REUSE):
         model.Conv(3, 3, 64, padding='SAME', strides=[1,1,1,1])
@@ -142,11 +142,11 @@ def FCN_32(model):
         
     # Get Class Scores
     with tf.variable_scope('conv16', reuse=tf.AUTO_REUSE):
-        model.Conv(1, 4096, model.num_classes, padding='SAME', strides=[1,1,1,1])
+        model.Conv(1, 4096, model.num_classes+1, padding='SAME', strides=[1,1,1,1])
         
     # Upsample
     with tf.variable_scope('deconv1', reuse=tf.AUTO_REUSE):
-        model.ConvTranspose(3, model.num_classes, model.num_classes, final_shape, padding='SAME', strides=[1,32,32,1])
+        model.ConvTranspose(3, model.num_classes+1, model.num_classes+1, final_shape, padding='SAME', strides=[1,32,32,1])
         model.Relu()
     return model.tensor
 
@@ -164,7 +164,7 @@ def FCN_8(model):
     -output: A tf.Tensor object repressenting the output of the network
     """
     original_shape = model.tensor.get_shape().as_list()
-    final_shape = original_shape[:3] + [model.num_classes]
+    final_shape = original_shape[:3] + [model.num_classes+1]
     with tf.variable_scope('conv1', reuse=tf.AUTO_REUSE):
         model.Conv(3, 3, 64, padding='SAME', strides=[1,1,1,1])
         model.Relu()
@@ -193,7 +193,7 @@ def FCN_8(model):
         
     # Get scores for pool3
     with tf.variable_scope('conv16', reuse=tf.AUTO_REUSE):
-        filter_shape = [1, 1, 256, 150]
+        filter_shape = [1, 1, 256, model.num_classes+1]
         weights = tf.get_variable('weights', shape=filter_shape).initialized_value()
         pool3 = tf.nn.conv2d(pool3, weights, padding='SAME', strides=[1,1,1,1])
         
@@ -211,7 +211,7 @@ def FCN_8(model):
         
     # Get scores for pool4
     with tf.variable_scope('conv17', reuse=tf.AUTO_REUSE):
-        filter_shape = [1, 1, 512, 150]
+        filter_shape = [1, 1, 512, model.num_classes+1]
         weights = tf.get_variable('weights', shape=filter_shape).initialized_value()
         pool4 = tf.nn.conv2d(pool4, weights, padding='SAME', strides=[1,1,1,1])
         
@@ -235,17 +235,17 @@ def FCN_8(model):
         
     # Get scores for conv7
     with tf.variable_scope('conv18', reuse=tf.AUTO_REUSE):
-        filter_shape = [1, 1, 4096, model.num_classes]
+        filter_shape = [1, 1, 4096, model.num_classes+1]
         weights = tf.get_variable('weights', shape=filter_shape).initialized_value()
         conv7 = tf.nn.conv2d(conv7, weights, padding='SAME', strides=[1,1,1,1])
     
     # Upsample coarse outputs
     with tf.variable_scope('deconv1', reuse=tf.AUTO_REUSE):
-        filter_shape = [3, 3, model.num_classes, model.num_classes]
+        filter_shape = [3, 3, model.num_classes+1, model.num_classes+1]
         weights = tf.get_variable('weights', shape=filter_shape).initialized_value()
         pool4_2x = tf.nn.conv2d_transpose(pool4, weights, pool3.shape, padding='SAME', strides=[1,2,2,1])
     with tf.variable_scope('deconv2', reuse=tf.AUTO_REUSE):
-        filter_shape = [3, 3, model.num_classes, model.num_classes]
+        filter_shape = [3, 3, model.num_classes+1, model.num_classes+1]
         weights = tf.get_variable('weights', shape=filter_shape).initialized_value()
         conv7_4x = tf.nn.conv2d_transpose(conv7, weights, pool3.shape, padding='SAME', strides=[1,4,4,1])
     
@@ -255,7 +255,7 @@ def FCN_8(model):
     
     # Final Upsampling
     with tf.variable_scope('deconv3', reuse=tf.AUTO_REUSE):
-        filter_shape = [3, 3, model.num_classes, model.num_classes]
+        filter_shape = [3, 3, model.num_classes+1, model.num_classes+1]
         weights = tf.get_variable('weights', shape=filter_shape).initialized_value()
         model.tensor = tf.nn.conv2d_transpose(model.tensor, weights, final_shape, padding='SAME', strides=[1,8,8,1])
         
@@ -277,7 +277,7 @@ def DilatedNet(model):
     -output: A tf.Tensor object repressenting the output of the network
     """
     original_shape = model.tensor.get_shape().as_list()
-    final_shape = original_shape[:3] + [model.num_classes]
+    final_shape = original_shape[:3] + [model.num_classes+1]
     with tf.variable_scope('conv1', reuse=tf.AUTO_REUSE):
         model.Conv(3, 3, 64, padding='SAME', strides=[1,1,1,1])
         model.Relu()
@@ -341,10 +341,10 @@ def DilatedNet(model):
 
     # Get Class Scores
     with tf.variable_scope('conv16', reuse=tf.AUTO_REUSE):
-        model.Conv(1, 4096, model.num_classes, padding='SAME', strides=[1,1,1,1])
+        model.Conv(1, 4096, model.num_classes+1, padding='SAME', strides=[1,1,1,1])
 
     # Upsample
     with tf.variable_scope('deconv1', reuse=tf.AUTO_REUSE):
-        model.ConvTranspose(3, model.num_classes, model.num_classes, final_shape, padding='SAME', strides=[1,32,32,1])
+        model.ConvTranspose(3, model.num_classes+1, model.num_classes+1, final_shape, padding='SAME', strides=[1,32,32,1])
         model.Relu()
     return model.tensor

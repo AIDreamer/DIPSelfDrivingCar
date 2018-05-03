@@ -53,6 +53,8 @@ cfg.TRAIN.WEIGHTS = 'b' # weight filename
 cfg.TRAIN.BATCH_SIZE = 4
 cfg.TRAIN.LEARNING_RATE = 0.005
 
+cfg.TRAIN.CHECKPOINT_PERIOD = 1000
+
 
         
         
